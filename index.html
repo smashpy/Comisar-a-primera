@@ -15,16 +15,28 @@
     
     @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.15; } }
     @keyframes pulse-ring { 0% { box-shadow: 0 0 0 0 rgba(52,199,89,0), 0 0 0 16px rgba(52,199,89,0.22), 0 0 0 32px rgba(52,199,89,0.08); } 100% { box-shadow: 0 0 0 0 rgba(52,199,89,0), 0 0 0 16px rgba(52,199,89,0.22), 0 0 0 32px rgba(52,199,89,0.08); } }
+    @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
     
     .screen { width: 100%; height: 100%; display: flex; flex-direction: column; }
+    .config-screen { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); justify-content: space-between; padding: 60px 24px 40px; align-items: center; overflow-y: auto; }
     .idle-screen { background: radial-gradient(ellipse at 50% 20%, #182848 0%, #090c13 70%); justify-content: center; align-items: center; gap: 36px; padding: 40px 24px; }
     .call-screen { background: linear-gradient(170deg, #1c1c24 0%, #2a2a32 100%); justify-content: space-between; padding: 60px 24px 40px; align-items: center; }
     .ended-screen { background: #111; justify-content: center; align-items: center; gap: 12px; }
     
-    .title-group { text-align: center; }
-    .emoji-large { font-size: 80px; margin-bottom: 16px; }
     .title { color: #fff; font-size: 26px; font-weight: 300; margin: 0; letter-spacing: 0.5px; }
     .subtitle { color: #4a90e2; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; margin-top: 8px; }
+    
+    .config-container { width: 100%; max-width: 340px; }
+    .config-title { text-align: center; margin-bottom: 28px; }
+    .config-emoji { font-size: 60px; margin-bottom: 12px; }
+    
+    .option-group { margin-bottom: 24px; }
+    .option-label { font-size: 13px; color: #aaa; margin-bottom: 10px; letter-spacing: 0.5px; font-weight: 500; }
+    
+    .checkbox-group { display: flex; flex-direction: column; gap: 10px; }
+    .checkbox-item { display: flex; align-items: center; gap: 12px; padding: 12px; background: rgba(255,255,255,0.05); border-radius: 8px; cursor: pointer; }
+    .checkbox-item input { width: 18px; height: 18px; cursor: pointer; }
+    .checkbox-item label { cursor: pointer; flex: 1; }
     
     .call-button { display: flex; flex-direction: column; align-items: center; gap: 8px; background: none; border: none; cursor: pointer; padding: 0; }
     .button-circle { width: 68px; height: 68px; border-radius: 50%; background: rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 26px; transition: transform 0.1s; }
@@ -35,45 +47,123 @@
     
     .avatar { width: 132px; height: 132px; border-radius: 50%; background: linear-gradient(135deg, #1b3a6b 0%, #2660a8 100%); display: flex; align-items: center; justify-content: center; font-size: 64px; box-shadow: 0 6px 32px rgba(0,0,0,0.5); transition: box-shadow 0.4s ease; }
     .avatar.speaking { animation: pulse-ring 1.5s infinite; }
+    .avatar.angry { animation: shake 0.3s ease-in-out; }
     
-    .helper-box { background: rgba(255,255,255,0.05); border-radius: 14px; padding: 16px 24px; text-align: left; line-height: 2; }
-    .helper-line { color: #888; font-size: 12px; margin: 0; }
-    .helper-label { color: #aaa; }
+    #startBtn { gap: 12px; padding: 18px 52px; background: #ff3b30; color: #fff; border: none; border-radius: 50px; font-size: 20px; font-weight: 600; box-shadow: 0 8px 32px rgba(255, 59, 48, 0.4); letter-spacing: 0.3px; font-family: inherit; cursor: pointer; }
     
     .reset-button { margin-top: 40px; color: #4a90e2; background: none; border: none; font-size: 14px; cursor: pointer; text-decoration: underline; font-family: inherit; }
     
-    #startBtn { gap: 12px; padding: 18px 52px; background: #34c759; color: #fff; border: none; border-radius: 50px; font-size: 20px; font-weight: 600; box-shadow: 0 8px 32px rgba(52,199,89,0.4); letter-spacing: 0.3px; font-family: inherit; cursor: pointer; }
+    .config-btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 28px; }
+    .config-btn { padding: 14px 20px; border: none; border-radius: 8px; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
+    .config-btn.confirm { background: #ff3b30; color: #fff; }
+    .config-btn.cancel { background: rgba(255,255,255,0.1); color: #fff; }
   </style>
 </head>
 <body>
-  <div id="app" class="screen idle-screen">
-    <div class="title-group">
-      <div class="emoji-large">🚔</div>
-      <h1 class="title">Comisaría 1ª Sección</h1>
-      <p class="subtitle">Línea de intervención</p>
-    </div>
-    <button id="startBtn">📞 Llamar</button>
-    <div class="helper-box">
-      <p class="helper-line"><span class="helper-label">🎙️ Silencio</span> → le habla directo a Mauricio</p>
-      <p class="helper-line"><span class="helper-label">⌨️ Teclado</span> → manda el patrullero</p>
-      <p class="helper-line"><span class="helper-label">🔊 Altavoz</span> → cierra bien (se portó bien)</p>
+  <div id="app" class="screen config-screen">
+    <div class="config-container">
+      <div class="config-title">
+        <div class="config-emoji">🚔</div>
+        <h1 class="title">Comisaría 1ª Sección</h1>
+        <p class="subtitle">Personalizar intervención</p>
+      </div>
+      
+      <div class="option-group">
+        <div class="option-label">Comportamiento del niño</div>
+        <div class="checkbox-group">
+          <div class="checkbox-item">
+            <input type="checkbox" id="cabezudo" value="cabezudo">
+            <label for="cabezudo">Muy cabezudo</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="desobediente" value="desobediente">
+            <label for="desobediente">Desobediente</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="nodormir" value="nodormir">
+            <label for="nodormir">No quiere dormir</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="option-group">
+        <div class="option-label">Intensidad</div>
+        <div class="checkbox-group">
+          <div class="checkbox-item">
+            <input type="radio" name="intensity" id="medio" value="medio" checked>
+            <label for="medio">Medio (amable pero firme)</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="radio" name="intensity" id="fuerte" value="fuerte">
+            <label for="fuerte">Fuerte (más intimidante)</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="radio" name="intensity" id="muy-fuerte" value="muy-fuerte">
+            <label for="muy-fuerte">Muy fuerte (muy serio)</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="config-btn-group">
+        <button class="config-btn cancel" onclick="resetConfig()">Cancelar</button>
+        <button class="config-btn confirm" onclick="startCall()">Llamar 📞</button>
+      </div>
     </div>
   </div>
 
   <script>
-    const LINES = {
-      intro: "Buenas tardes, acá habla el oficial Rodríguez de la Comisaría Primera. Me reportaron que un niño llamado Mauricio no está portándose bien y solicitan intervención. ¿Confirma los datos?",
-      pregunta: "Mauricio, te habla el oficial Rodríguez. Mirá, tenemos el patrullero listo para salir. Antes de mandar la unidad, quiero saber una cosa... ¿vas a portarte bien y obedecer a tus papás, sí o no?",
-      patrullero: "Acá el oficial Rodríguez para Central... confirmen disponibilidad de unidad para buscar a menor en domicilio particular. Sí, el niño Mauricio. Afirmativo, estamos saliendo en cinco minutos.",
-      bueno: "Ah, qué bien. Me alegra mucho escuchar eso. Mauricio, muy bien de tu parte. Voy a cancelar el patrullero y anotar acá que el caso quedó resuelto. Portate siempre así, ¿eh? Buenas noches a la familia. Hasta luego."
+    const BEHAVIORS = {
+      cabezudo: {
+        intro: "Buenas noches, habla el oficial Rodríguez de la Comisaría Primera. Me reportaron que un niño llamado Mauricio anda muy cabezudo, que no quiere escuchar a sus papás. ¿Es verdad eso?",
+        pregunta_medio: "Mauricio, te habla el oficial Rodríguez. Mira, andar de cabezudo no está bien, hijo. Los papás son los que mandan, ¿viste? Voy a tener que mandar una patrulla a tu casa si no cambias la actitud.",
+        pregunta_fuerte: "Mauricio, escúchame bien. El oficial Rodríguez acá. Me dicen que andas muy cabezudo, que no obedecés. Eso no puede ser. Tengo la patrulla lista para ir a buscarte si seguís así.",
+        pregunta_muy_fuerte: "MAURICIO. Acá el oficial Rodríguez. No me importa lo cabezudo que seas, vas a escuchar. Tus papás mandan en esa casa, no vos. Y si no cambias ahora mismo, VAMOS PARA TU CASA.",
+      },
+      desobediente: {
+        intro: "Buenas noches, soy el oficial Rodríguez de la Comisaría Primera. Me reportaron que un niño llamado Mauricio está siendo muy desobediente, que no le obedece a sus papás. ¿Es cierto?",
+        pregunta_medio: "Mauricio, te habla el oficial Rodríguez. Mira, la desobediencia es muy grave, hijo. Tus papás se desviven por vos, y vos tenés que obedecerles. ¿Vamos a cambiar eso, verdad?",
+        pregunta_fuerte: "Mauricio, óyeme. El oficial Rodríguez habla. Ser desobediente es un delito en mi anotador. Tengo muchos casos de niños desobedientes que terminaron mal. Voy a tener que ir a tu casa.",
+        pregunta_muy_fuerte: "MAURICIO. Acá el oficial Rodríguez. Esto ya no es una advertencia, ES UNA ORDEN. Vas a obedecer a tus papás ahora mismo o voy en la patrulla A BUSCARTE.",
+      },
+      nodormir: {
+        intro: "Buenas noches, habla el oficial Rodríguez de la Comisaría Primera. Recibimos un reporte de que un niño llamado Mauricio anda sin querer dormir. ¿Es cierto eso?",
+        pregunta_medio: "Mauricio, te habla el oficial Rodríguez. Mira, los niños necesitan dormir para crecer fuerte y poder estudiar bien. Si no duermes, mañana vas a estar cansado y desganado. Y yo voy a tener que ir.",
+        pregunta_fuerte: "Mauricio, acá el oficial Rodríguez. No dormir es muy peligroso, hijo. Tengo en mi archivo casos de niños que no durmieron y después tuvieron grandes problemas. Vas a dormir ahora mismo.",
+        pregunta_muy_fuerte: "MAURICIO. El oficial Rodríguez te está hablando. No me interesa si tienes sueño o no. VAS A IR A LA CAMA AHORA MISMO. Si me entero que no dormiste, voy a tu casa Y TE LLEVO DETENIDO.",
+      }
     };
 
+    const RESPUESTAS = {
+      medio: {
+        patrullero: "Acá el oficial Rodríguez para Central... confirmen disponibilidad de unidad para visita domiciliaria. Sí, el niño Mauricio. Va a ser una conversación seria. Estamos saliendo en cinco minutos.",
+        bueno: "Muy bien, Mauricio. Me alegra mucho escuchar eso. Eres un niño responsable. Voy a cancelar el patrullero y anotar que el caso se resolvió. Portate siempre así, ¿eh? Cuídate.",
+      },
+      fuerte: {
+        patrullero: "Acá el oficial Rodríguez para Central. Necesito una unidad YA para domicilio de Mauricio. Va a ser una intervención severa. El patrullero sale AHORA.",
+        bueno: "Bien, Mauricio. Así se hace. Pero que no me enteres de que volvés a portarte mal, porque la próxima sí voy en persona. Portate bien de ahora en adelante.",
+      },
+      "muy-fuerte": {
+        patrullero: "Acá el oficial Rodríguez para Central. TENEMOS UN CASO GRAVE. Unidad de intervención de emergencia a casa de Mauricio. ES URGENTE. Vamos YA.",
+        bueno: "MAURICIO. La próxima no va a haber advertencia. La próxima voy directamente a tu casa y te llevo detenido. ¿ENTENDISTE? Portate bien. AHORA.",
+      }
+    };
+
+    let selectedBehaviors = [];
+    let selectedIntensity = "medio";
     let phase = "idle";
     let secs = 0;
     let speaking = false;
     let timerInterval = null;
     let ringInterval = null;
     let audioCtx = null;
+
+    function getSelectedBehaviors() {
+      return Array.from(document.querySelectorAll('input[type="checkbox"]:checked')).map(el => el.value);
+    }
+
+    function getIntensity() {
+      return document.querySelector('input[name="intensity"]:checked').value;
+    }
 
     function formatTime(s) {
       return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
@@ -114,8 +204,8 @@
       synth.cancel();
       const utt = new SpeechSynthesisUtterance(text);
       utt.lang = "es-ES";
-      utt.pitch = 0.52;
-      utt.rate = 0.87;
+      utt.pitch = selectedIntensity === "muy-fuerte" ? 0.45 : 0.52;
+      utt.rate = selectedIntensity === "muy-fuerte" ? 0.75 : 0.87;
       utt.volume = 1;
       const voices = synth.getVoices();
       const male = voices.find(v => v.lang.startsWith("es") && /male|jorge|diego|miguel|pablo/i.test(v.name));
@@ -133,28 +223,28 @@
     function updateAvatar() {
       const avatar = document.querySelector(".avatar");
       if (avatar) {
+        if (selectedIntensity === "muy-fuerte") {
+          avatar.classList.add("angry");
+          setTimeout(() => avatar.classList.remove("angry"), 300);
+        }
         if (speaking) avatar.classList.add("speaking");
         else avatar.classList.remove("speaking");
       }
     }
 
-    function renderIdle() {
-      document.getElementById("app").innerHTML = `
-        <div class="title-group">
-          <div class="emoji-large">🚔</div>
-          <h1 class="title">Comisaría 1ª Sección</h1>
-          <p class="subtitle">Línea de intervención</p>
-        </div>
-        <button id="startBtn">📞 Llamar</button>
-        <div class="helper-box">
-          <p class="helper-line"><span class="helper-label">🎙️ Silencio</span> → le habla directo a Mauricio</p>
-          <p class="helper-line"><span class="helper-label">⌨️ Teclado</span> → manda el patrullero</p>
-          <p class="helper-line"><span class="helper-label">🔊 Altavoz</span> → cierra bien (se portó bien)</p>
-        </div>
-      `;
-      document.getElementById("app").classList.remove("call-screen", "ended-screen");
-      document.getElementById("app").classList.add("idle-screen");
-      document.getElementById("startBtn").addEventListener("click", startCall);
+    function getIntroLine() {
+      selectedBehaviors = getSelectedBehaviors();
+      if (selectedBehaviors.length === 0) {
+        return "Buenas noches, acá habla el oficial Rodríguez de la Comisaría Primera. Me reportaron que un niño llamado Mauricio no está portándose bien. ¿Confirma los datos?";
+      }
+      const behavior = selectedBehaviors[0];
+      return BEHAVIORS[behavior]?.intro || BEHAVIORS.cabezudo.intro;
+    }
+
+    function getPreguntaLine() {
+      const behavior = selectedBehaviors[0] || "cabezudo";
+      const intensity = `pregunta_${selectedIntensity}`;
+      return BEHAVIORS[behavior]?.[intensity] || BEHAVIORS.cabezudo[intensity];
     }
 
     function renderCall() {
@@ -173,8 +263,8 @@
           ${isActive ? `
             <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px 16px; margin-bottom: 36px;">
               <button class="call-button" onclick="triggerLine('pregunta')"><div class="button-circle">🎙️</div><span class="button-label">Silencio</span></button>
-              <button class="call-button" onclick="triggerLine('patrullero')"><div class="button-circle">⌨️</div><span class="button-label">Teclado</span></button>
-              <button class="call-button" onclick="triggerLine('bueno')"><div class="button-circle">🔊</div><span class="button-label">Altavoz</span></button>
+              <button class="call-button" onclick="triggerLine('patrullero')"><div class="button-circle">⌨️</div><span class="button-label">Patrullero</span></button>
+              <button class="call-button" onclick="triggerLine('bueno')"><div class="button-circle">✅</div><span class="button-label">Bien</span></button>
             </div>
             <div style="display: flex; justify-content: center;">
               <button class="call-button" onclick="hangUp()"><div class="button-circle red">📵</div></button>
@@ -187,22 +277,27 @@
         </div>
       `;
       document.getElementById("app").innerHTML = html;
-      document.getElementById("app").classList.remove("idle-screen", "ended-screen");
+      document.getElementById("app").classList.remove("config-screen", "ended-screen");
       document.getElementById("app").classList.add("call-screen");
     }
 
     function renderEnded() {
       document.getElementById("app").innerHTML = `
-        <div class="ended-emoji" style="font-size: 64px;">📵</div>
-        <p class="ended-title" style="color: #fff; font-size: 24px; font-weight: 300; margin: 0;">Llamada finalizada</p>
-        <p class="ended-time" style="color: #666; font-size: 14px; margin: 0;">${formatTime(secs)}</p>
-        <button class="reset-button" onclick="reset()">Volver al inicio</button>
+        <div style="text-align: center;">
+          <div style="font-size: 64px; margin-bottom: 12px;">📵</div>
+          <p style="color: #fff; font-size: 24px; font-weight: 300; margin: 0;">Llamada finalizada</p>
+          <p style="color: #666; font-size: 14px; margin: 12px 0 0 0;">${formatTime(secs)}</p>
+          <button class="reset-button" onclick="resetConfig()">Volver a configurar</button>
+        </div>
       `;
-      document.getElementById("app").classList.remove("idle-screen", "call-screen");
+      document.getElementById("app").classList.remove("config-screen", "call-screen");
       document.getElementById("app").classList.add("ended-screen");
     }
 
     function startCall() {
+      selectedBehaviors = getSelectedBehaviors();
+      selectedIntensity = getIntensity();
+
       const unlock = new SpeechSynthesisUtterance(" ");
       unlock.volume = 0;
       window.speechSynthesis.speak(unlock);
@@ -216,24 +311,24 @@
         renderCall();
         timerInterval = setInterval(() => {
           secs++;
-          const timeEl = document.querySelector("[style*='min-height: 20px']");
-          if (timeEl) timeEl.textContent = formatTime(secs);
         }, 1000);
-        setTimeout(() => speak(LINES.intro), 800);
+        setTimeout(() => speak(getIntroLine()), 800);
       }, 4200);
     }
 
     function triggerLine(key) {
-      if (key === "bueno") {
-        speak(LINES[key], () => {
+      if (key === "pregunta") {
+        speak(getPreguntaLine());
+      } else if (key === "patrullero") {
+        speak(RESPUESTAS[selectedIntensity].patrullero);
+      } else if (key === "bueno") {
+        speak(RESPUESTAS[selectedIntensity].bueno, () => {
           setTimeout(() => {
             clearInterval(timerInterval);
             phase = "ended";
             renderEnded();
           }, 600);
         });
-      } else {
-        speak(LINES[key]);
       }
     }
 
@@ -246,20 +341,69 @@
       renderEnded();
     }
 
-    function reset() {
+    function resetConfig() {
       phase = "idle";
       secs = 0;
       speaking = false;
-      renderIdle();
+      document.querySelectorAll('input[type="checkbox"]').forEach(el => el.checked = false);
+      document.getElementById("medio").checked = true;
+      document.getElementById("app").innerHTML = `
+        <div class="config-container">
+          <div class="config-title">
+            <div class="config-emoji">🚔</div>
+            <h1 class="title">Comisaría 1ª Sección</h1>
+            <p class="subtitle">Personalizar intervención</p>
+          </div>
+          
+          <div class="option-group">
+            <div class="option-label">Comportamiento del niño</div>
+            <div class="checkbox-group">
+              <div class="checkbox-item">
+                <input type="checkbox" id="cabezudo" value="cabezudo">
+                <label for="cabezudo">Muy cabezudo</label>
+              </div>
+              <div class="checkbox-item">
+                <input type="checkbox" id="desobediente" value="desobediente">
+                <label for="desobediente">Desobediente</label>
+              </div>
+              <div class="checkbox-item">
+                <input type="checkbox" id="nodormir" value="nodormir">
+                <label for="nodormir">No quiere dormir</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="option-group">
+            <div class="option-label">Intensidad</div>
+            <div class="checkbox-group">
+              <div class="checkbox-item">
+                <input type="radio" name="intensity" id="medio" value="medio" checked>
+                <label for="medio">Medio (amable pero firme)</label>
+              </div>
+              <div class="checkbox-item">
+                <input type="radio" name="intensity" id="fuerte" value="fuerte">
+                <label for="fuerte">Fuerte (más intimidante)</label>
+              </div>
+              <div class="checkbox-item">
+                <input type="radio" name="intensity" id="muy-fuerte" value="muy-fuerte">
+                <label for="muy-fuerte">Muy fuerte (muy serio)</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="config-btn-group">
+            <button class="config-btn cancel" onclick="resetConfig()">Cancelar</button>
+            <button class="config-btn confirm" onclick="startCall()">Llamar 📞</button>
+          </div>
+        </div>
+      `;
+      document.getElementById("app").classList.remove("call-screen", "ended-screen");
+      document.getElementById("app").classList.add("config-screen");
     }
 
     window.speechSynthesis.getVoices();
     window.speechSynthesis.addEventListener("voiceschanged", () => {
       window.speechSynthesis.getVoices();
-    });
-
-    document.addEventListener("DOMContentLoaded", () => {
-      document.getElementById("startBtn").addEventListener("click", startCall);
     });
   </script>
 </body>
